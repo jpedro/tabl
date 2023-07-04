@@ -13,14 +13,15 @@ const (
 
 // Deprecated: Use `tablelize.Print` instead.
 func Rows(data [][]any) {
-	// fmt.Fprintf(os.Stderr, "Warning: tablelize.Rows is deprecated.")
 	Print(data)
 }
 
+// Prints the table.
 func Print(data [][]any) {
 	fmt.Println(Render(data))
 }
 
+// Returns the rendered table.
 func Render(data [][]any) string {
 	var widths []int
 	var aligns []int
@@ -90,6 +91,7 @@ func Render(data [][]any) string {
 	return text
 }
 
+// Checks is a value can be cast into an integer or a float.
 func isNumeric(val any) bool {
 	switch v := val.(type) {
 	case int, uint, int8, uint8, int16, uint16, int32, uint64, uintptr:

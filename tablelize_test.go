@@ -31,3 +31,13 @@ func TestRenderMixed(t *testing.T) {
 		t.Errorf("Failed to render properly")
 	}
 }
+
+func TestPrint(t *testing.T) {
+	var data [][]any
+
+	data = append(data, []any{"KEY", "VAL"})
+	data = append(data, []any{"One", "1a"})
+
+	Rows(data)
+	Print(data)
+}

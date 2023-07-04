@@ -1,99 +1,114 @@
 package tablelize
 
-import(
-  "fmt"
-  "strings"
-  "reflect"
-  "strconv"
+import (
+	"fmt"
+	"strconv"
 )
 
 const (
-  ALIGN_NUMBER = 0
-  ALIGN_STRING = 1
+	ALIGN_STRING int = iota
+	ALIGN_NUMBER
 )
 
-func Rows(data [][]string) {
-  var widths []int
-  var aligns []int
-  started := false
 
-  for i := range(data) {
-    row := data[i]
-
-    if started == false {
-      len := len(row)
-      widths = make([]int, len)
-      aligns = make([]int, len)
-      started = true
-    }
-
-    for j := range(row) {
-      val := row[j]
-      len := len(val)
-      if widths[j] < len {
-        widths[j] = len
-      }
-
-      // 1. Skip the header
-      // 2. Assume that they all are numeric, because you want to:
-      // 3. Stop as soon as you find one non-numeric value and force align them
-      //    all to the left
-      if i > 0 && aligns[j] == ALIGN_NUMBER {
-        slak := reflect.TypeOf(val).String()
-        switch slak {
-        case "int":
-        case "float":
-        case "string":
-          if isNumeric(val) == false {
-            aligns[j] = ALIGN_STRING
-            break
-          }
-
-          // Keep it as ALIGN_NUMBER
-        default:
-          aligns[j] = ALIGN_STRING
-        }
-
-      }
-    }
-  }
-
-  format := ""
-  align := "-"
-  for i := range(widths) {
-    align = "-"
-    if aligns[i] == ALIGN_NUMBER {
-      align = ""
-    }
-    format = fmt.Sprintf("%s%%%s%ds   ", format, align, widths[i])
-  }
-
-  format = strings.Trim(format, " ")
-
-  for i := range(data) {
-    row := data[i]
-    args := make([]interface{}, len(row), len(row))
-    for i := range row {
-        args[i] = row[i]
-    }
-    fmt.Printf(format + "\n", args...)
-  }
+// Deprecated: Use `tablelize.Print` instead.
+func Rows(data [][]any) {
+	// fmt.Fprintf(os.Stderr, "Warning: tablelize.Rows is deprecated.")
+	Print(data)
 }
 
-func isNumeric(val interface{}) bool {
-  switch val.(type) {
-  case int:
-    return true
-  case float64:
-    return true
-  case string:
-    str, _ := val.(string)
-    _, errFloat := strconv.ParseFloat(str, 64)
-    _, errInt := strconv.ParseInt(str, 10, 64)
+func Print(data [][]any) {
+	fmt.Println(Render(data))
+}
 
-    if errFloat == nil || errInt == nil {
-      return true
-    }
-  }
-  return false
+func Render(data [][]any) string {
+	var widths []int
+	var aligns []int
+
+	fields := len(data[0])
+	widths = make([]int, fields)
+	aligns = make([]int, fields)
+
+	// Assume they all are numeric, because you want to stop as soon
+	// as you find the first non-numeric value and align it as string
+	for i := range aligns {
+		aligns[i] = ALIGN_NUMBER
+	}
+
+	for i, row := range data {
+		for j, val := range row {
+			len := len(fmt.Sprintf("%s", val))
+			if len > widths[j] {
+				widths[j] = len
+			}
+
+			// Skip the header for the aligns
+			if i == 0 {
+				continue
+			}
+
+			// String align means a value already failed to be numeric
+			if aligns[j] == ALIGN_STRING {
+				continue
+			}
+
+			switch val.(type) {
+			case int, uint, int8, uint8, int16, uint16, int32, uint64, uintptr:
+			case float32, float64:
+			case string:
+				if !isNumeric(val) {
+					aligns[j] = ALIGN_STRING
+					break
+				}
+			default:
+				aligns[j] = ALIGN_STRING
+			}
+		}
+	}
+
+	format := ""
+	align := ""
+	for i := range widths {
+		align = ""
+		if aligns[i] == ALIGN_STRING {
+			align = "-"
+		}
+		format = fmt.Sprintf("%s%%%s%dv   ", format, align, widths[i])
+	}
+
+	format = format[0:len(format)-3] + "\n"
+	text := ""
+	for i := range data {
+		row := data[i]
+		args := make([]any, len(row))
+		for i := range row {
+			args[i] = row[i]
+		}
+		text = text + fmt.Sprintf(format, args...)
+	}
+
+	return text
+}
+
+func isNumeric(val any) bool {
+	switch v := val.(type) {
+	case int, uint, int8, uint8, int16, uint16, int32, uint64, uintptr:
+		// byte is an alias for uint8
+		// rune is an alias for int32
+		return true
+	case float32, float64:
+		return true
+	case string:
+		_, err := strconv.ParseInt(v, 10, 64)
+		if err == nil {
+			return true
+		}
+
+		_, err = strconv.ParseFloat(v, 64)
+		if err == nil {
+			return true
+		}
+	}
+
+	return false
 }

@@ -94,12 +94,16 @@ func Render(data [][]any) string {
 // Checks is a value can be cast into an integer or a float.
 func isNumeric(val any) bool {
 	switch v := val.(type) {
-	case int, uint, int8, uint8, int16, uint16, int32, uint64, uintptr:
-		// byte is an alias for uint8
-		// rune is an alias for int32
+	case int, int8, int16, int64,
+		uint, uint8, uint16, uint32, uint64:
+		// `byte` is an alias for `uint8`
+		// `rune` is an alias for `int32`
+		// Excluded `uintptr`
 		return true
+
 	case float32, float64:
 		return true
+
 	case string:
 		_, err := strconv.ParseInt(v, 10, 64)
 		if err == nil {

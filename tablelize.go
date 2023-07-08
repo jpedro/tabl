@@ -96,8 +96,10 @@ func isNumeric(val any) bool {
 	switch v := val.(type) {
 	case int, int8, int16, int64,
 		uint, uint8, uint16, uint32, uint64:
-		// `byte` is an alias for `uint8`
-		// `rune` is an alias for `int32`
+		// https://github.com/golang/go/blob/master/src/builtin/builtin.go#L90-L94
+		// `byte` is a type alias for `uint8`
+		// https://github.com/golang/go/blob/master/src/builtin/builtin.go#L94
+		// `rune` is a type alias for `int32`
 		// Excluded `uintptr`
 		return true
 

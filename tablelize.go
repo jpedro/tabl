@@ -2,7 +2,9 @@ package tablelize
 
 import (
 	"fmt"
+	"regexp"
 	"strconv"
+	// "unicode"
 )
 
 const (
@@ -36,9 +38,15 @@ func Render(data [][]any) string {
 		aligns[i] = ALIGN_NUMBER
 	}
 
+	dirty := ""
+	clean := ""
 	for i, row := range data {
 		for j, val := range row {
-			len := len(fmt.Sprintf("%s", val))
+			dirty = fmt.Sprintf("%s", val)
+			fmt.Printf("dirty: %v\n", dirty)
+			clean = cleanText(dirty)
+			fmt.Printf("clean: %v\n", clean)
+			len := len(clean)
 			if len > widths[j] {
 				widths[j] = len
 			}
@@ -57,10 +65,12 @@ func Render(data [][]any) string {
 			case int, uint, int8, uint8, int16, uint16, int32, uint64, uintptr:
 			case float32, float64:
 			case string:
-				if !isNumeric(val) {
+				if !isNumeric(clean) {
+					fmt.Printf("clean is NOT NUM: %v\n", clean)
 					aligns[j] = ALIGN_STRING
 					break
 				}
+				fmt.Printf("clean is NUM: %v\n", clean)
 			default:
 				aligns[j] = ALIGN_STRING
 			}
@@ -78,17 +88,45 @@ func Render(data [][]any) string {
 	}
 
 	format = format[0:len(format)-3] + "\n"
+	fmt.Printf("format: %v\n", format)
+	fmt.Printf("widths: %v\n", widths)
 	text := ""
+	var row []any
+	var val any
 	for i := range data {
-		row := data[i]
+		row = data[i]
 		args := make([]any, len(row))
 		for i := range row {
-			args[i] = row[i]
+			val = row[i]
+			// dirty = fmt.Sprintf("%v", val)
+			// fmt.Printf("dirty: %v\n", dirty)
+			// clean = cleanText(dirty)
+			// fmt.Printf("clean: %v\n", clean)
+			args[i] = val
+
 		}
+		fmt.Printf("args: %#v\n", args)
 		text = text + fmt.Sprintf(format, args...)
 	}
 
 	return text
+}
+
+func cleanText(text string) string {
+    m := regexp.MustCompile(`\033\[(.*?)m`)
+    res := m.ReplaceAllString(text, "")
+	return res
+	// // fmt.Printf("text: %s\n", text)
+	// clean := []rune{}
+	// for _, r := range text {
+	// 	if !unicode.IsPrint(r) {
+	// 		continue
+	// 	}
+	// 	clean = append(clean, r)
+	// }
+
+	// fmt.Printf("clean: (%d) %s\n", len(clean), string(clean))
+	// return string(clean)
 }
 
 // Checks is a value can be cast into an integer or a float.

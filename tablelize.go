@@ -43,9 +43,9 @@ func Render(data [][]any) string {
 	for i, row := range data {
 		for j, val := range row {
 			dirty = fmt.Sprintf("%s", val)
-			fmt.Printf("dirty: %v\n", dirty)
+			fmt.Printf("dirty (%v): %v\n", len(dirty), dirty)
 			clean = cleanText(dirty)
-			fmt.Printf("clean: %v\n", clean)
+			fmt.Printf("clean (%d): %v\n", len(clean), clean)
 			len := len(clean)
 			if len > widths[j] {
 				widths[j] = len

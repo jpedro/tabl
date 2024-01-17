@@ -11,3 +11,7 @@ func (me *Table) Add(values ...any) {
 func (me *Table) Print() {
 	Print(me.rows)
 }
+
+func (me *Table) Render() string {
+	return Render(me.rows)
+}

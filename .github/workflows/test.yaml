@@ -30,5 +30,6 @@ jobs:
     - name: Go install
       run: |
         go install
+        go env
         echo "GOPATH: $GOPATH"
         ls -laF --color=always $GOPATH

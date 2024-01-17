@@ -43,3 +43,4 @@ Check [example/main.go](example/main.go).
 
 - [ ] Runes are not printed correctly.
 - [ ] Support alternate row colours.
+- [ ] Columns and Values should be their own structs. Avoids duplicated calls.

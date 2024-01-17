@@ -9,7 +9,7 @@ func main() {
 
 	table.Add("KEY", "DESCRIPTION", "COLORED_NUMBERS", "ALMOST_A_NUMBER")
 	table.Add("Some metric", "", "1", 1)
-	table.Add("This is a looooong key", "Some text", "1", 1.23)
+	table.Add("Nobody expects the Spanish Inquisition", "Ah!", "1", 1.23)
 	table.Add("Uh", "Integer with color codes", "\033[32;1m333\033[0m", "3a")
 
 	table.Print()

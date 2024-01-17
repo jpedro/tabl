@@ -38,6 +38,5 @@ func TestPrint(t *testing.T) {
 	data = append(data, []any{"KEY", "VAL"})
 	data = append(data, []any{"One", "1a"})
 
-	Rows(data)
 	Print(data)
 }

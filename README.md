@@ -7,34 +7,38 @@ width. It also tries to align numbers to the right if **all** are
 numeric.
 
 
-### Usage
+## Usage
 
 ```go
 package main
 
 import (
-    "github.com/jpedro/tablelize"
+	"github.com/jpedro/tables"
 )
 
 func main() {
-    var data [][]any
+	table := tables.New()
 
-    data = append(data, []any{"KEY", "VALUE", "NUMBER", "ALMOST_NUMBER"})
-    data = append(data, []any{"char", "a", "1", "1"})
-    data = append(data, []any{"longer-key-name", "Some text", "-2", "2"})
-    data = append(data, []any{"key", "And now for something completely different", "3", "3a"})
+	table.Add("KEY", "DESCRIPTION", "COLORED_NUMBERS", "ALMOST_A_NUMBER")
+	table.Add("Some metric", "", "1", 1)
+	table.Add("Nobody expects the Spanish Inquisition", "Ah!", "1", 1.23)
+	table.Add("Uh", "Integer with color codes", "\033[32;1m333\033[0m", "3a")
 
-    tablelize.Rows(data)
+	table.Print()
 }
 ```
 
 Output:
 ```
 % go run example/main.go
-KEY               VALUE                                        NUMBER   ALMOST_NUMBER
-char              a                                                 1   1
-longer-key-name   Some text                                        -2   2
-key               And now for something completely different        3   3a
+KEY                                      DESCRIPTION                COLORED_NUMBERS   ALMOST_A_NUMBER
+Some metric                                                                       1   1
+Nobody expects the Spanish Inquisition   Ah!                                      1   1.23
+Uh                                       Integer with color codes               333   3a
 ```
 
 Check [example/main.go](example/main.go).
+
+## Todos
+
+- [ ] Runes are not printed correctly.

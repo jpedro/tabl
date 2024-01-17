@@ -18,8 +18,8 @@ jobs:
 
     - name: Go test
       run: |
-        go test -coverprofile cover.out -v ./...
-        go tool cover -func cover.out
+        go test -coverprofile coverage.out -v ./...
+        go tool cover -func coverage.out
         # go test -v -covermode=count -coverprofile=coverage.out
 
     - name: Go example
@@ -30,4 +30,5 @@ jobs:
     - name: Go install
       run: |
         go install
-        ls -la $GOPATH
+        echo "GOPATH: $GOPATH"
+        ls -laF --color=always $GOPATH

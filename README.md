@@ -42,3 +42,4 @@ Check [example/main.go](example/main.go).
 ## Todos
 
 - [ ] Runes are not printed correctly.
+- [ ] Support alternate row colours.

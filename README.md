@@ -1,6 +1,6 @@
-# Tables
+# Tablez
 
-[![Test](https://github.com/jpedro/tables/actions/workflows/test.yaml/badge.svg)](https://github.com/jpedro/tables/actions/workflows/test.yaml)
+[![Test](https://github.com/jpedro/tablez/actions/workflows/test.yaml/badge.svg)](https://github.com/jpedro/tablez/actions/workflows/test.yaml)
 
 Prints out the values of a table (array of arrays) of strings aligned by
 width. It also tries to align numbers to the right if **all** are
@@ -13,11 +13,11 @@ numeric.
 package main
 
 import (
-	"github.com/jpedro/tables"
+	"github.com/jpedro/tablez"
 )
 
 func main() {
-	table := tables.New()
+	table := tablez.New()
 
 	table.Add("KEY", "DESCRIPTION", "COLORED_NUMBERS", "ALMOST_A_NUMBER")
 	table.Add("Some metric", "", "1", 1)
@@ -41,6 +41,8 @@ Check [example/main.go](example/main.go).
 
 
 ## Todos
+
+- [ ] Fix the goddamned version to make the go index use the right code
 
 - [ ] Runes, nils and prob others are not printed correctly
 

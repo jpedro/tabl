@@ -4,20 +4,9 @@ import (
 	"fmt"
 )
 
-type Table struct {
-	rows [][]any
-}
-
+// Creates a new Table
 func New() *Table {
 	return &Table{}
-}
-
-func (me *Table) Add(values ...any) {
-	me.rows = append(me.rows, values)
-}
-
-func (me *Table) Print() {
-	Print(me.rows)
 }
 
 // Prints the table.

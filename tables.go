@@ -26,7 +26,7 @@ func Render(data [][]any) string {
 		args := make([]any, columns)
 		for i := range row {
 			val = row[i]
-			raw, _ := getValueAlign(val)
+			raw, _ := getTextAlign(val)
 			args[i] = padValue(raw, widths[i])
 		}
 

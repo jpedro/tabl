@@ -42,11 +42,12 @@ func calcFormat(data [][]any) (string, int, []int) {
 
 	for i, row := range data {
 		for j, val := range row {
-			dirty, _ := getValueAlign(val)
+			dirty, _ := getTextAlign(val)
 			// fmt.Printf("  dirty (%T %d): %v\n", dirty, len(dirty), dirty)
 			clean := cleanText(dirty)
 			// fmt.Printf("  clean (%T %d): %v\n", clean, len(clean), clean)
-			_, align := getValueAlign(clean)
+			// Why twice? We want the real alignment of the clean value
+			_, align := getTextAlign(clean)
 			// fmt.Printf("  value (%T %d): %v\n", value, len(value), value)
 
 			length := len(clean)
@@ -142,7 +143,7 @@ func cleanText(text string) string {
 // 	return false
 // }
 
-func getValueAlign(val any) (string, int) {
+func getTextAlign(val any) (string, int) {
 	switch v := val.(type) {
 	case int, int8, int16, int64,
 		uint, uint8, uint16, uint32, uint64:

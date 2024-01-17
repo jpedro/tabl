@@ -4,12 +4,16 @@ import (
 	"fmt"
 	"regexp"
 	"strconv"
-	// "unicode"
+	"strings"
 )
 
 const (
-	ALIGN_STRING int = iota
-	ALIGN_NUMBER
+	// Should this be aligned to the right?
+	ALIGN_LEFT = 0
+	ALIGN_RIGHT = 1
+)
+var (
+	ansiCodeRegex = regexp.MustCompile(`\033\[(.*?)m`)
 )
 
 type Table struct {
@@ -38,32 +42,45 @@ func Print(data [][]any) {
 	fmt.Println(Render(data))
 }
 
-// Returns the rendered table.
-func Render(data [][]any) string {
-	var widths []int
-	var aligns []int
+func calcColumns(data [][]any) int {
+	count := 0
 
-	fields := len(data[0])
-	widths = make([]int, fields)
-	aligns = make([]int, fields)
+	for i := range data {
+		length := len(data[i])
+		if length > count {
+			count = length
+		}
+	}
+
+	return count
+}
+
+func calcFormat(data [][]any) (string, int, []int) {
+	columns := calcColumns(data)
+	widths := make([]int, columns)
+	aligns := make([]int, columns)
 
 	// Assume they all are numeric, because you want to stop as soon
 	// as you find the first non-numeric value and align it as string
 	for i := range aligns {
-		aligns[i] = ALIGN_NUMBER
+		aligns[i] = ALIGN_RIGHT
 	}
 
-	dirty := ""
-	clean := ""
+	// align := ALIGN_RIGHT
+	// dirty := ""
+	// clean := ""
 	for i, row := range data {
 		for j, val := range row {
-			dirty = fmt.Sprintf("%s", val)
-			fmt.Printf("dirty (%v): %v\n", len(dirty), dirty)
-			clean = cleanText(dirty)
-			fmt.Printf("clean (%d): %v\n", len(clean), clean)
-			len := len(clean)
-			if len > widths[j] {
-				widths[j] = len
+			dirty, _ := getValueAlign(val)
+			// fmt.Printf("  dirty (%T %d): %v\n", dirty, len(dirty), dirty)
+			clean := cleanText(dirty)
+			// fmt.Printf("  clean (%T %d): %v\n", clean, len(clean), clean)
+			_, align := getValueAlign(clean)
+			// fmt.Printf("  value (%T %d): %v\n", value, len(value), value)
+
+			length := len(clean)
+			if length > widths[j] {
+				widths[j] = length
 			}
 
 			// Skip the header for the aligns
@@ -71,24 +88,14 @@ func Render(data [][]any) string {
 				continue
 			}
 
-			// String align means a value already failed to be numeric
-			if aligns[j] == ALIGN_STRING {
+			// Left align means a we already marked it as such
+			if aligns[j] == ALIGN_LEFT {
+				// fmt.Printf("  Skipping another ALIGN_LEFT: %v\n", j)
 				continue
 			}
 
-			switch val.(type) {
-			case int, uint, int8, uint8, int16, uint16, int32, uint64, uintptr:
-			case float32, float64:
-			case string:
-				if !isNumeric(clean) {
-					fmt.Printf("clean is NOT NUM: %v\n", clean)
-					aligns[j] = ALIGN_STRING
-					break
-				}
-				fmt.Printf("clean is NUM: %v\n", clean)
-			default:
-				aligns[j] = ALIGN_STRING
-			}
+			aligns[j] = align
+			// fmt.Printf("  Doing align [%d]: %d\n", align, j)
 		}
 	}
 
@@ -96,80 +103,130 @@ func Render(data [][]any) string {
 	align := ""
 	for i := range widths {
 		align = ""
-		if aligns[i] == ALIGN_STRING {
+		if aligns[i] == ALIGN_LEFT {
 			align = "-"
 		}
 		format = fmt.Sprintf("%s%%%s%dv   ", format, align, widths[i])
 	}
-
+	// Remove the trailing separator `   `
 	format = format[0:len(format)-3] + "\n"
-	fmt.Printf("format: %v\n", format)
-	fmt.Printf("widths: %v\n", widths)
+
+	// fmt.Printf("==> Columns: %d\n", columns)
+	// fmt.Printf("==> Widths:  %v\n", widths)
+	// fmt.Printf("==> Aligns:  %v\n", aligns)
+	// fmt.Printf("==> Format:  %s\n", format)
+
+	return format, columns, widths
+}
+
+// Returns the rendered table.
+func Render(data [][]any) string {
+	format, columns, widths := calcFormat(data)
 	text := ""
 	var row []any
 	var val any
 	for i := range data {
 		row = data[i]
-		args := make([]any, len(row))
+		len := len(row)
+		args := make([]any, columns)
 		for i := range row {
 			val = row[i]
-			// dirty = fmt.Sprintf("%v", val)
-			// fmt.Printf("dirty: %v\n", dirty)
-			// clean = cleanText(dirty)
-			// fmt.Printf("clean: %v\n", clean)
-			args[i] = val
-
+			raw, _ := getValueAlign(val)
+			args[i] = pad(raw, widths[i])
 		}
-		fmt.Printf("args: %#v\n", args)
+
+		if len < columns {
+			for i := len; i < columns; i++ {
+				args[i] = ""
+			}
+		}
+		// fmt.Printf("args: %#v\n", args)
+		// colored := format
+		// if i%2 == 1 {
+		// 	colored = "\033[48;5;237m" + format + "\033[0m"
+		// }
+		// colored = colored + "\n"
 		text = text + fmt.Sprintf(format, args...)
 	}
 
 	return text
 }
 
-func cleanText(text string) string {
-    m := regexp.MustCompile(`\033\[(.*?)m`)
-    res := m.ReplaceAllString(text, "")
-	return res
-	// // fmt.Printf("text: %s\n", text)
-	// clean := []rune{}
-	// for _, r := range text {
-	// 	if !unicode.IsPrint(r) {
-	// 		continue
-	// 	}
-	// 	clean = append(clean, r)
-	// }
-
-	// fmt.Printf("clean: (%d) %s\n", len(clean), string(clean))
-	// return string(clean)
+func pad(text string, number int) string {
+	clean := cleanText(text)
+	if len(clean) == len(text) {
+		return text
+	}
+	result := text
+	// fmt.Printf("  - Pad: %s vs %s (%d vs %d) with %d\n", text, clean, number, len(clean), number - len(clean))
+	for i := 0 ; i < (number - len(clean)); i++ {
+		result = " " + result
+	}
+	return result
 }
 
-// Checks is a value can be cast into an integer or a float.
-func isNumeric(val any) bool {
+func cleanText(text string) string {
+	if !strings.Contains(text, "\033") {
+		return text
+	}
+
+	res := ansiCodeRegex.ReplaceAllString(text, "")
+	return res
+}
+
+// // Checks is a value can be cast into an integer or a float.
+// func isNumeric(val any) bool {
+// 	switch v := val.(type) {
+// 	case int, int8, int16, int64,
+// 		uint, uint8, uint16, uint32, uint64:
+// 		// `byte` is a type alias for `uint8`
+// 		// `rune` is a type alias for `int32`
+// 		// Excluded `uintptr`
+// 		// https://github.com/golang/go/blob/master/src/builtin/builtin.go#L90-L94
+// 		return true
+
+// 	case float32, float64:
+// 		return true
+
+// 	case string:
+// 		_, err := strconv.ParseInt(v, 10, 64)
+// 		if err == nil {
+// 			return true
+// 		}
+
+// 		_, err = strconv.ParseFloat(v, 64)
+// 		if err == nil {
+// 			return true
+// 		}
+// 	}
+
+// 	return false
+// }
+
+func getValueAlign(val any) (string, int) {
 	switch v := val.(type) {
 	case int, int8, int16, int64,
 		uint, uint8, uint16, uint32, uint64:
-		// https://github.com/golang/go/blob/master/src/builtin/builtin.go#L90-L94
 		// `byte` is a type alias for `uint8`
-		// https://github.com/golang/go/blob/master/src/builtin/builtin.go#L94
 		// `rune` is a type alias for `int32`
 		// Excluded `uintptr`
-		return true
+		// https://github.com/golang/go/blob/master/src/builtin/builtin.go#L90-L94
+		return fmt.Sprintf("%d", v), ALIGN_RIGHT
 
 	case float32, float64:
-		return true
+		return fmt.Sprintf("%v", v), ALIGN_RIGHT
 
 	case string:
-		_, err := strconv.ParseInt(v, 10, 64)
+		i, err := strconv.ParseInt(v, 10, 64)
 		if err == nil {
-			return true
+			return fmt.Sprintf("%v", i), ALIGN_RIGHT
 		}
 
-		_, err = strconv.ParseFloat(v, 64)
+		f, err := strconv.ParseFloat(v, 64)
 		if err == nil {
-			return true
+			return fmt.Sprintf("%v", f), ALIGN_RIGHT
 		}
 	}
 
-	return false
+	return fmt.Sprintf("%s", val), ALIGN_LEFT
 }

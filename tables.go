@@ -4,6 +4,10 @@ import (
 	"fmt"
 )
 
+var (
+	ShouldLog = false
+)
+
 // Creates a new Table
 func New() *Table {
 	return &Table{}

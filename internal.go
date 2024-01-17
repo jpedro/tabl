@@ -2,6 +2,7 @@ package tablez
 
 import (
 	"fmt"
+	"os"
 	"regexp"
 	"strconv"
 	"strings"
@@ -30,11 +31,22 @@ func countColumns(data [][]any) int {
 	return count
 }
 
+func log(message string, args ...any) {
+	if !ShouldLog {
+		return
+	}
+	fmt.Fprintf(os.Stderr, message, args...)
+}
+
 func calcFormat(data [][]any) (string, int, []int) {
 	columns := countColumns(data)
 	// Preallocate is always faster
 	widths := make([]int, columns)
 	aligns := make([]int, columns)
+	log("\n")
+	log("Columns: %v\n", columns)
+	log("Widths:  %v\n", widths)
+	log("Aligns:  %v\n", aligns)
 
 	// Assume they all are numeric, because you want to stop as soon
 	// as you find the first non-numeric value and align it as string
@@ -44,31 +56,37 @@ func calcFormat(data [][]any) (string, int, []int) {
 
 	for i, row := range data {
 		for j, val := range row {
-			dirty, _ := getTextAlign(val)
-			// fmt.Printf("  dirty (%T %d): %v\n", dirty, len(dirty), dirty)
+			log("\n")
+			log("- VAL in row %d, col %d = %v\n", i, j, val)
+			dirty, old := getTextAlign(val)
+			log("  dirty (%T %d): %v\n", dirty, len(dirty), dirty)
+			log("    align %v\n", old)
 			clean := cleanText(dirty)
-			// fmt.Printf("  clean (%T %d): %v\n", clean, len(clean), clean)
+			log("  clean (%T %d): %v\n", clean, len(clean), clean)
 			// Why twice? We want the real alignment of the clean value
-			_, align := getTextAlign(clean)
-			// fmt.Printf("  value (%T %d): %v\n", value, len(value), value)
+			value, align := getTextAlign(clean)
+			log("  value (%T %d): %v\n", value, len(value), value)
+			log("    align %v\n", align)
 
 			length := len(clean)
 			if length > widths[j] {
+				log("  extending width col=%d from %d to %d\n", j, widths[j], length)
 				widths[j] = length
 			}
 
 			if i == 0 {
-				// fmt.Printf("Skip the header for the aligns: %v\n", i)
+				log("  skip the header: %v\n", i)
 				continue
 			}
 
 			if aligns[j] == alignLeft {
-				// fmt.Printf("Left align means a we already marked it as such: %v\n", j)
+				log("  left align means already set: %v\n", j)
 				continue
 			}
 
+			log("  BEFORE DOING REALIGN col=%d, prev=%d, new=%d\n", j, aligns[j], align)
 			aligns[j] = align
-			// fmt.Printf("Doing align [%d]: %d\n", align, j)
+			log("  AFTER DOING REALIGN %d\n", aligns[j])
 		}
 	}
 
@@ -82,6 +100,11 @@ func calcFormat(data [][]any) (string, int, []int) {
 		}
 		format = fmt.Sprintf("%s%%%s%dv%s", format, align, widths[i], separator)
 	}
+
+	log("\n")
+	log("Format: %s\n", format)
+	log("Widths:  %v\n", widths)
+	log("Aligns:  %v\n", aligns)
 
 	// Remove the trailing separator
 	format = format[0:len(format)-len(separator)] + "\n"

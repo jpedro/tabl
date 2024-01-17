@@ -2,6 +2,7 @@ package tablez
 
 type Table struct {
 	rows [][]any
+	Log bool
 }
 
 func (me *Table) Add(values ...any) {

@@ -1,4 +1,4 @@
-package table
+package tables
 
 import (
 	"fmt"
@@ -12,6 +12,21 @@ const (
 	ALIGN_NUMBER
 )
 
+type Table struct {
+	rows [][]any
+}
+
+func New() *Table {
+	return &Table{}
+}
+
+func (me *Table) Add(values ...any) {
+	me.rows = append(me.rows, values)
+}
+
+func (me *Table) Print() {
+	Print(me.rows)
+}
 
 // Deprecated: Use `tablelize.Print` instead.
 func Rows(data [][]any) {

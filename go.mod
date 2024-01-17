@@ -1,3 +1,3 @@
-module github.com/jpedro/table
+module github.com/jpedro/tables
 
 go 1.20

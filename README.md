@@ -1,6 +1,6 @@
 # Tables
 
-[![Test](https://github.com/jpedro/tablelize/actions/workflows/test.yaml/badge.svg)](https://github.com/jpedro/tablelize/actions/workflows/test.yaml)
+[![Test](https://github.com/jpedro/tables/actions/workflows/test.yaml/badge.svg)](https://github.com/jpedro/tables/actions/workflows/test.yaml)
 
 Prints out the values of a table (array of arrays) of strings aligned by
 width. It also tries to align numbers to the right if **all** are

@@ -1,3 +1,3 @@
-module github.com/jpedro/tablelize
+module github.com/jpedro/table
 
 go 1.20

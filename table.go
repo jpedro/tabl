@@ -1,4 +1,4 @@
-package tablelize
+package table
 
 import (
 	"fmt"

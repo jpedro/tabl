@@ -16,6 +16,7 @@ var (
 	ansiCodeRegex = regexp.MustCompile(`\033\[(.*?)m`)
 )
 
+// We allow rows have diff number of columns
 func countColumns(data [][]any) int {
 	count := 0
 
@@ -31,6 +32,7 @@ func countColumns(data [][]any) int {
 
 func calcFormat(data [][]any) (string, int, []int) {
 	columns := countColumns(data)
+	// Preallocate is always faster
 	widths := make([]int, columns)
 	aligns := make([]int, columns)
 
@@ -168,5 +170,5 @@ func getTextAlign(val any) (string, int) {
 		}
 	}
 
-	return fmt.Sprintf("%s", val), alignLeft
+	return fmt.Sprintf("%v", val), alignLeft
 }

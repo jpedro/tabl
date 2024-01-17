@@ -22,7 +22,9 @@ func TestNewPrint(t *testing.T) {
 	table := New()
 
 	table.Add("KEY", "VAL")
-	table.Add("One", "1")
+	table.Add("One", nil)
 
+	text := table.Render()
+	t.Logf("Rendered: %s\n", text)
 	table.Print()
 }

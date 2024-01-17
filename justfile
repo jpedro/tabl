@@ -1,3 +1,5 @@
-#!/usr/bin/env -S just --justfile
+default:
+  just --list
+
 example:
 	cd ./example; go run .

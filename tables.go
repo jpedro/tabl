@@ -27,7 +27,7 @@ func Render(data [][]any) string {
 		for i := range row {
 			val = row[i]
 			raw, _ := getValueAlign(val)
-			args[i] = pad(raw, widths[i])
+			args[i] = padValue(raw, widths[i])
 		}
 
 		if len < columns {

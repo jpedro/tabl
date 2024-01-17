@@ -11,11 +11,12 @@ const (
 	alignLeft = iota
 	alignRight
 )
+
 var (
 	ansiCodeRegex = regexp.MustCompile(`\033\[(.*?)m`)
 )
 
-func calcColumns(data [][]any) int {
+func countColumns(data [][]any) int {
 	count := 0
 
 	for i := range data {
@@ -29,7 +30,7 @@ func calcColumns(data [][]any) int {
 }
 
 func calcFormat(data [][]any) (string, int, []int) {
-	columns := calcColumns(data)
+	columns := countColumns(data)
 	widths := make([]int, columns)
 	aligns := make([]int, columns)
 
@@ -68,6 +69,7 @@ func calcFormat(data [][]any) (string, int, []int) {
 		}
 	}
 
+	separator := "   "
 	format := ""
 	align := ""
 	for i := range widths {
@@ -75,10 +77,11 @@ func calcFormat(data [][]any) (string, int, []int) {
 		if aligns[i] == alignLeft {
 			align = "-"
 		}
-		format = fmt.Sprintf("%s%%%s%dv   ", format, align, widths[i])
+		format = fmt.Sprintf("%s%%%s%dv%s", format, align, widths[i], separator)
 	}
-	// Remove the trailing separator `   `
-	format = format[0:len(format)-3] + "\n"
+
+	// Remove the trailing separator
+	format = format[0:len(format)-len(separator)] + "\n"
 
 	// fmt.Printf("==> Columns: %d\n", columns)
 	// fmt.Printf("==> Widths:  %v\n", widths)
@@ -88,7 +91,7 @@ func calcFormat(data [][]any) (string, int, []int) {
 	return format, columns, widths
 }
 
-func pad(text string, number int) string {
+func padValue(text string, number int) string {
 	clean := cleanText(text)
 	if len(clean) == len(text) {
 		return text

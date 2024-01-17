@@ -1,4 +1,4 @@
-# tablelize
+# Tables
 
 [![Test](https://github.com/jpedro/tablelize/actions/workflows/test.yaml/badge.svg)](https://github.com/jpedro/tablelize/actions/workflows/test.yaml)
 
@@ -38,6 +38,7 @@ Uh                                       Integer with color codes               
 ```
 
 Check [example/main.go](example/main.go).
+
 
 ## Todos
 

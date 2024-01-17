@@ -41,6 +41,10 @@ Check [example/main.go](example/main.go).
 
 ## Todos
 
-- [ ] Runes, nils and prob others are not printed correctly.
-- [ ] Support alternate row colours.
-- [ ] Columns and Values should be their own structs. Avoids duplicated calls.
+- [ ] Runes, nils and prob others are not printed correctly
+
+- [ ] Columns and Values should be their own structs (avoids duplicated calls)
+  - [ ] Columns can have unit and separate colors
+
+- [ ] Support alternate row colours
+  - [ ] Highlighted values at row or cell level

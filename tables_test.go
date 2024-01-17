@@ -36,7 +36,7 @@ func TestPrint(t *testing.T) {
 	var data [][]any
 
 	data = append(data, []any{"KEY", "VAL"})
-	data = append(data, []any{"One", "1a"})
+	data = append(data, []any{"One", "\033[1m1\033[0m]"})
 
 	Print(data)
 }

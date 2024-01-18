@@ -6,6 +6,7 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"unicode/utf8"
 )
 
 const (
@@ -59,28 +60,29 @@ func calcFormat(data [][]any) (string, int, []int) {
 			log("\n")
 			log("- VAL in row %d, col %d = %v\n", i, j, val)
 			dirty, old := getTextAlign(val)
-			log("  dirty (%T %d): %v\n", dirty, len(dirty), dirty)
+			log("  dirty ([%d]%T): %v\n", len(dirty), dirty, dirty)
 			log("    align %v\n", old)
 			clean := cleanText(dirty)
-			log("  clean (%T %d): %v\n", clean, len(clean), clean)
+			log("  clean ([%d]%T): %v\n", len(clean), clean, clean)
 			// Why twice? We want the real alignment of the clean value
 			value, align := getTextAlign(clean)
-			log("  value (%T %d): %v\n", value, len(value), value)
+			log("  value ([%d]%T): %v\n", len(value), value, value)
 			log("    align %v\n", align)
 
-			length := len(clean)
+			// length := len(clean)
+			length := utf8.RuneCountInString(clean)
 			if length > widths[j] {
 				log("  extending width col=%d from %d to %d\n", j, widths[j], length)
 				widths[j] = length
 			}
 
 			if i == 0 {
-				log("  skip the header: %v\n", i)
+				log("  skip the header for col=%d\n", i)
 				continue
 			}
 
 			if aligns[j] == alignLeft {
-				log("  left align means already set: %v\n", j)
+				log("  left align means already set for col=%d\n", j)
 				continue
 			}
 
@@ -98,7 +100,7 @@ func calcFormat(data [][]any) (string, int, []int) {
 		if aligns[i] == alignLeft {
 			align = "-"
 		}
-		format = fmt.Sprintf("%s%%%s%dv%s", format, align, widths[i], separator)
+		format = fmt.Sprintf("%s%%%s%ds%s", format, align, widths[i], separator)
 	}
 
 	log("\n")

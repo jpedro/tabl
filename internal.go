@@ -109,6 +109,7 @@ func calcFormat(data [][]any) (string, int, []int) {
 	log("Aligns:  %v\n", aligns)
 
 	// Remove the trailing separator
+	// We use the raw bytes instead of the UTF-8 length
 	// format = format[0:len(format)-utf8.RuneCountInString(RowSeparator)] + "\n"
 	format = RowPadding + RowStarting + format[0:len(format)-len(CellSeparator)] + RowFinish+ "\n"
 

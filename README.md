@@ -1,6 +1,6 @@
-# Tablez
+# Tables
 
-[![Test](https://github.com/jpedro/tablez/actions/workflows/test.yaml/badge.svg)](https://github.com/jpedro/tablez/actions/workflows/test.yaml)
+[![Test](https://github.com/jpedro/tables/actions/workflows/test.yaml/badge.svg)](https://github.com/jpedro/tables/actions/workflows/test.yaml)
 
 Prints out the values of a table (array of arrays) of strings aligned by
 width. It also tries to align numbers to the right if **all** are
@@ -13,11 +13,11 @@ numeric.
 package main
 
 import (
-	"github.com/jpedro/tablez"
+	"github.com/jpedro/tables"
 )
 
 func main() {
-	table := tablez.New()
+	table := tables.New()
 
 	table.Add("KEY", "DESCRIPTION", "COLORED_NUMBERS", "ALMOST_A_NUMBER")
 	table.Add("Some metric", "", "1", 1)

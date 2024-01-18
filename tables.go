@@ -5,7 +5,7 @@ import (
 )
 
 var (
-	ShouldLog     = false
+	ShowDebug     = false
 	RowPadding    = ""
 	RowStarting   = ""
 	RowFinish     = ""

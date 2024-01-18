@@ -33,7 +33,7 @@ func countColumns(data [][]any) int {
 }
 
 func log(message string, args ...any) {
-	if !ShouldLog {
+	if !ShowDebug {
 		return
 	}
 	fmt.Fprintf(os.Stderr, message, args...)

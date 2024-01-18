@@ -5,20 +5,21 @@ import (
 )
 
 var (
-	ShouldLog = false
+	ShouldLog     = false
+	RowPadding    = ""
+	RowStarting   = ""
+	RowFinish     = ""
+	CellSeparator = "   "
 )
 
-// Creates a new Table
 func New() *Table {
 	return &Table{}
 }
 
-// Prints the table.
 func Print(data [][]any) {
 	fmt.Println(Render(data))
 }
 
-// Returns the rendered table.
 func Render(data [][]any) string {
 	format, columns, widths := calcFormat(data)
 	text := ""
@@ -45,6 +46,7 @@ func Render(data [][]any) string {
 		// 	colored = "\033[48;5;237m" + format + "\033[0m"
 		// }
 		// colored = colored + "\n"
+		// text = text + RowPadding + RowStarting + fmt.Sprintf(format, args...) + RowFinish
 		text = text + fmt.Sprintf(format, args...)
 	}
 

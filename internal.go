@@ -58,15 +58,15 @@ func calcFormat(data [][]any) (string, int, []int) {
 	for i, row := range data {
 		for j, val := range row {
 			log("\n")
-			log("- VAL in row %d, col %d = %v\n", i, j, val)
+			log("- VAL in row %d, col %d = '%v'\n", i, j, val)
 			dirty, old := getTextAlign(val)
-			log("  dirty ([%d]%T): %v\n", len(dirty), dirty, dirty)
+			log("  dirty ([%d]%T): '%v'\n", len(dirty), dirty, dirty)
 			log("    align %v\n", old)
 			clean := cleanText(dirty)
-			log("  clean ([%d]%T): %v\n", len(clean), clean, clean)
+			log("  clean ([%d]%T): '%v'\n", len(clean), clean, clean)
 			// Why twice? We want the real alignment of the clean value
 			value, align := getTextAlign(clean)
-			log("  value ([%d]%T): %v\n", len(value), value, value)
+			log("  value ([%d]%T): '%v'\n", len(value), value, value)
 			log("    align %v\n", align)
 
 			// length := len(clean)
@@ -86,13 +86,13 @@ func calcFormat(data [][]any) (string, int, []int) {
 				continue
 			}
 
-			log("  BEFORE DOING REALIGN col=%d, prev=%d, new=%d\n", j, aligns[j], align)
+			log("  BEFORE REALIGN col=%d, cur=%d, new=%d\n", j, aligns[j], align)
 			aligns[j] = align
-			log("  AFTER DOING REALIGN %d\n", aligns[j])
+			log("  AFTER REALIGN cur=%d\n", aligns[j])
 		}
 	}
 
-	separator := "   "
+	// separator := " | "
 	format := ""
 	align := ""
 	for i := range widths {
@@ -100,7 +100,7 @@ func calcFormat(data [][]any) (string, int, []int) {
 		if aligns[i] == alignLeft {
 			align = "-"
 		}
-		format = fmt.Sprintf("%s%%%s%ds%s", format, align, widths[i], separator)
+		format = fmt.Sprintf("%s%%%s%ds%s", format, align, widths[i], CellSeparator)
 	}
 
 	log("\n")
@@ -109,7 +109,8 @@ func calcFormat(data [][]any) (string, int, []int) {
 	log("Aligns:  %v\n", aligns)
 
 	// Remove the trailing separator
-	format = format[0:len(format)-len(separator)] + "\n"
+	// format = format[0:len(format)-utf8.RuneCountInString(RowSeparator)] + "\n"
+	format = RowPadding + RowStarting + format[0:len(format)-len(CellSeparator)] + RowFinish+ "\n"
 
 	// fmt.Printf("==> Columns: %d\n", columns)
 	// fmt.Printf("==> Widths:  %v\n", widths)
@@ -141,34 +142,35 @@ func cleanText(text string) string {
 	return res
 }
 
-// // Checks is a value can be cast into an integer or a float.
-// func isNumeric(val any) bool {
-// 	switch v := val.(type) {
-// 	case int, int8, int16, int64,
-// 		uint, uint8, uint16, uint32, uint64:
-// 		// `byte` is a type alias for `uint8`
-// 		// `rune` is a type alias for `int32`
-// 		// Excluded `uintptr`
-// 		// https://github.com/golang/go/blob/master/src/builtin/builtin.go#L90-L94
-// 		return true
+// Checks is a value can be cast into an integer or a float.
+//lint:ignore U1000 Shhhh
+func isNumeric(val any) bool {
+	switch v := val.(type) {
+	case int, int8, int16, int64,
+		uint, uint8, uint16, uint32, uint64:
+		// `byte` is a type alias for `uint8`
+		// `rune` is a type alias for `int32`
+		// Excluded `uintptr`
+		// https://github.com/golang/go/blob/master/src/builtin/builtin.go#L90-L94
+		return true
 
-// 	case float32, float64:
-// 		return true
+	case float32, float64:
+		return true
 
-// 	case string:
-// 		_, err := strconv.ParseInt(v, 10, 64)
-// 		if err == nil {
-// 			return true
-// 		}
+	case string:
+		_, err := strconv.ParseInt(v, 10, 64)
+		if err == nil {
+			return true
+		}
 
-// 		_, err = strconv.ParseFloat(v, 64)
-// 		if err == nil {
-// 			return true
-// 		}
-// 	}
+		_, err = strconv.ParseFloat(v, 64)
+		if err == nil {
+			return true
+		}
+	}
 
-// 	return false
-// }
+	return false
+}
 
 func getTextAlign(val any) (string, int) {
 	switch v := val.(type) {

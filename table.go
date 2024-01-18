@@ -1,4 +1,4 @@
-package tablez
+package tables
 
 type Table struct {
 	rows [][]any

@@ -1,4 +1,4 @@
-package tablez
+package tables
 
 import (
 	"testing"

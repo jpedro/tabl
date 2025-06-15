@@ -1,4 +1,4 @@
-package tables
+package tabl
 
 import (
 	"fmt"
@@ -31,7 +31,7 @@ func Render(data [][]any) string {
 		args := make([]any, columns)
 		for i := range row {
 			val = row[i]
-			raw, _ := getTextAlign(val)
+			raw, _ := alignText(val)
 			args[i] = padValue(raw, widths[i])
 		}
 

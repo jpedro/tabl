@@ -1,11 +1,11 @@
 package main
 
 import (
-	"github.com/jpedro/tables"
+	"github.com/jpedro/tabl"
 )
 
 func main() {
-	table := tables.New()
+	table := tabl.New()
 
 	table.Add("KEY", "DESCRIPTION", "COLORED_NUMBERS", "ALMOST_A_NUMBER")
 	table.Add("Runes gone wrong", "", '1', 1) // "49" might be the wrong value

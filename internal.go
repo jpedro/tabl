@@ -1,4 +1,4 @@
-package tables
+package tabl
 
 import (
 	"fmt"
@@ -59,13 +59,13 @@ func calcFormat(data [][]any) (string, int, []int) {
 		for j, val := range row {
 			log("\n")
 			log("- VAL in row %d, col %d = '%v'\n", i, j, val)
-			dirty, old := getTextAlign(val)
+			dirty, old := alignText(val)
 			log("  dirty ([%d]%T): '%v'\n", len(dirty), dirty, dirty)
 			log("    align %v\n", old)
 			clean := cleanText(dirty)
 			log("  clean ([%d]%T): '%v'\n", len(clean), clean, clean)
 			// Why twice? We want the real alignment of the clean value
-			value, align := getTextAlign(clean)
+			value, align := alignText(clean)
 			log("  value ([%d]%T): '%v'\n", len(value), value, value)
 			log("    align %v\n", align)
 
@@ -173,7 +173,7 @@ func isNumeric(val any) bool {
 	return false
 }
 
-func getTextAlign(val any) (string, int) {
+func alignText(val any) (string, int) {
 	switch v := val.(type) {
 	case int, int8, int16, int64,
 		uint, uint8, uint16, uint32, uint64:

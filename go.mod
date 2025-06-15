@@ -1,4 +1,4 @@
-module github.com/jpedro/tables
+module github.com/jpedro/tabl
 
 go 1.20
 

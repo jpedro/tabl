@@ -1,4 +1,4 @@
-package tables
+package tabl
 
 type Table struct {
 	rows [][]any

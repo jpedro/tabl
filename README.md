@@ -1,6 +1,6 @@
-# Tables
+# Tabl
 
-[![Test](https://github.com/jpedro/tables/actions/workflows/test.yaml/badge.svg)](https://github.com/jpedro/tables/actions/workflows/test.yaml)
+[![Test](https://github.com/jpedro/tabl/actions/workflows/test.yaml/badge.svg)](https://github.com/jpedro/tabl/actions/workflows/test.yaml)
 
 Prints out the values of a table (array of arrays) of strings aligned by
 width. It also tries to align numbers to the right if **all** are
@@ -13,11 +13,11 @@ numeric.
 package main
 
 import (
-	"github.com/jpedro/tables"
+	"github.com/jpedro/tabl"
 )
 
 func main() {
-	table := tables.New()
+	table := tabl.New()
 
 	table.Add("KEY", "DESCRIPTION", "COLORED_NUMBERS", "ALMOST_A_NUMBER")
 	table.Add("Some metric", "", "1", 1)
@@ -47,7 +47,9 @@ Check [example/main.go](example/main.go).
 - [ ] Runes, nils and prob others are not printed correctly
 
 - [ ] Columns and Values should be their own structs (avoids duplicated calls)
-  - [ ] Columns can have unit and separate colors
 
-- [ ] Support alternate row colours
-  - [ ] Highlighted values at row or cell level
+- [ ] Columns can have unit and separate colors
+
+- [ ] Support alternate row and column colors
+
+- [ ] Highlighted values at row or cell level

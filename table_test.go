@@ -6,7 +6,6 @@ import (
 
 func TestNewRender(t *testing.T) {
 	table := New()
-
 	table.Add("KEY", "VAL")
 	table.Add("One", "1")
 
@@ -20,7 +19,6 @@ func TestNewRender(t *testing.T) {
 
 func TestNewPrint(t *testing.T) {
 	table := New()
-
 	table.Add("KEY", "VAL")
 	table.Add("One", nil)
 

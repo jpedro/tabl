@@ -16,5 +16,5 @@ func main() {
 	table.Add("Nobody expects the Spanish Inquisition", "Ah!", string('1'), 1.23)
 	table.Add("Uh", "Integer with color codes", "\033[32;1m333\033[0m", "3a")
 
-	table.Print()
+	print(table.Render())
 }
